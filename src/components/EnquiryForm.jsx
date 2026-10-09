@@ -10,9 +10,9 @@ import { BRAND } from '../data/config';
 // 3. Create Email Template (use variable names below)
 // 4. Replace the three values below with your actual IDs
 // ============================================================
-const EMAILJS_SERVICE_ID  = 'service_wi613zs';
-const EMAILJS_TEMPLATE_ID = 'template_0xsau3n';
-const EMAILJS_PUBLIC_KEY  = '01Fy6ZoH4nmJxZLb0';
+const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID  || 'service_wi613zs';
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_0xsau3n';
+const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY  || '01Fy6ZoH4nmJxZLb0';
 
 // Template variables sent to EmailJS — map these in your template:
 // {{from_name}}  {{from_email}}  {{phone}}  {{whatsapp}}
@@ -90,40 +90,83 @@ export default function EnquiryForm({ defaultRoom }) {
 
   const validate = () => {
     const e = {};
+
     if (step === 0) {
+      // Name — required, letters + spaces + common punctuation only
       const name = sanitize(data.name);
       if (!name) e.name = 'Name is required';
       else if (name.length < 2) e.name = 'Name must be at least 2 characters';
-      else if (name.length > 60) e.name = 'Name is too long';
-      else if (!/^[a-zA-Z\s'.'-]+$/.test(name)) e.name = 'Name can only contain letters';
+      else if (name.length > 60) e.name = 'Name must be under 60 characters';
+      else if (!/^[a-zA-Z\s'.\-]+$/.test(name)) e.name = 'Name can only contain letters, spaces, or . - \'';
 
-      if (!/^[6-9]\d{9}$/.test(data.phone)) e.phone = 'Enter valid 10-digit Indian mobile number';
+      // Phone — required, Indian mobile, digits only after trim
+      const phone = data.phone.trim();
+      if (!phone) e.phone = 'Mobile number is required';
+      else if (!/^[6-9]\d{9}$/.test(phone)) e.phone = 'Enter valid 10-digit Indian mobile number';
 
-      if (data.whatsapp && !/^[6-9]\d{9}$/.test(data.whatsapp)) e.whatsapp = 'Enter valid 10-digit number';
+      // WhatsApp — optional but must be valid if filled
+      const wa = data.whatsapp.trim();
+      if (wa && !/^[6-9]\d{9}$/.test(wa)) e.whatsapp = 'Enter valid 10-digit Indian mobile number';
 
-      if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email)) e.email = 'Enter a valid email address';
+      // Email — optional but strict format if filled
+      const email = data.email.trim();
+      if (email) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) e.email = 'Enter a valid email address';
+        else if (email.length > 100) e.email = 'Email address is too long';
+      }
 
-      if (data.age && (isNaN(data.age) || Number(data.age) < 16 || Number(data.age) > 45))
-        e.age = 'Age must be between 16 and 45';
+      // Age — optional but must be whole number in range if filled
+      if (data.age !== '') {
+        const age = Number(data.age);
+        if (!Number.isInteger(age)) e.age = 'Age must be a whole number';
+        else if (age < 16 || age > 45) e.age = 'Age must be between 16 and 45';
+      }
 
-      if (!data.occupationType) e.occupationType = 'Please select one';
+      // Occupation — required
+      if (!data.occupationType) e.occupationType = 'Please select your occupation';
     }
+
     if (step === 1) {
-      if (!data.roomPreference) e.roomPreference = 'Please select room type';
-      if (!data.budget) e.budget = 'Please select budget';
+      // Room type — required
+      if (!data.roomPreference) e.roomPreference = 'Please select a room type';
+
+      // Budget — required
+      if (!data.budget) e.budget = 'Please select your budget range';
+
+      // Current location — optional but limit length if filled
+      const loc = sanitize(data.currentLocation);
+      if (loc && loc.length > 100) e.currentLocation = 'Location must be under 100 characters';
+      else if (loc && loc.length < 2) e.currentLocation = 'Enter a valid location';
     }
+
     if (step === 2) {
-      if (!data.moveInDate) e.moveInDate = 'Please select move-in date';
-      else {
+      // Move-in date — required, not past, not more than 1 year ahead
+      if (!data.moveInDate) {
+        e.moveInDate = 'Please select a move-in date';
+      } else {
         const selected = new Date(data.moveInDate);
-        const today = new Date(); today.setHours(0,0,0,0);
+        const today = new Date(); today.setHours(0, 0, 0, 0);
         const maxDate = new Date(); maxDate.setFullYear(maxDate.getFullYear() + 1);
         if (selected < today) e.moveInDate = 'Move-in date cannot be in the past';
         else if (selected > maxDate) e.moveInDate = 'Move-in date cannot be more than 1 year ahead';
       }
+
+      // Stay duration — required
+      if (!data.stayDuration) e.stayDuration = 'Please select expected stay duration';
+
+      // College / Company — optional but validate if filled
+      const cc = sanitize(data.collegeOrCompany);
+      if (cc && cc.length < 2) e.collegeOrCompany = 'Enter a valid college or company name';
+      else if (cc && cc.length > 100) e.collegeOrCompany = 'Must be under 100 characters';
+      else if (cc && !/^[a-zA-Z0-9\s'.&,\-()]+$/.test(cc)) e.collegeOrCompany = 'Only letters, numbers, and basic punctuation allowed';
+
+      // Message — optional, max 500 chars
       if (data.message && data.message.length > 500) e.message = 'Message cannot exceed 500 characters';
-      if (!data.consent) e.consent = 'Please accept to continue';
+
+      // Consent — required
+      if (!data.consent) e.consent = 'You must agree to be contacted to proceed';
     }
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -216,8 +259,9 @@ export default function EnquiryForm({ defaultRoom }) {
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               <a href={`https://wa.me/${BRAND.whatsapp}?text=Hi! I just submitted an enquiry for ${data.roomPreference} room at Raigad House.`}
                 target="_blank" rel="noopener noreferrer"
-                className="btn" style={{ background: '#25D366', color: '#fff', fontSize: 14 }}>
-                &#128172; WhatsApp Us
+                className="btn" style={{ background: '#25D366', color: '#fff', fontSize: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.001 2C6.478 2 2 6.478 2 12c0 1.85.504 3.58 1.38 5.065L2.05 21.95l5.02-1.312A9.956 9.956 0 0 0 12 22c5.523 0 10-4.477 10-10S17.524 2 12.001 2zm0 1.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17zM8.647 7.5c-.2 0-.52.075-.793.375-.27.3-1.04 1.016-1.04 2.475s1.065 2.872 1.213 3.072c.149.2 2.066 3.273 5.08 4.461.71.272 1.263.434 1.694.556.712.202 1.36.173 1.872.105.571-.075 1.758-.719 2.007-1.413.248-.694.248-1.288.173-1.413-.074-.124-.273-.198-.572-.347-.298-.15-1.758-.868-2.031-.967-.273-.1-.472-.149-.671.15-.198.298-.77.967-.943 1.166-.174.198-.348.223-.647.074-.298-.149-1.26-.464-2.4-1.48-.887-.79-1.485-1.766-1.659-2.065-.174-.298-.018-.46.13-.608.134-.134.298-.348.447-.522.15-.174.2-.298.298-.497.1-.198.05-.372-.025-.521-.074-.15-.67-1.613-.917-2.207-.242-.579-.487-.5-.671-.51a12.07 12.07 0 0 0-.572-.01z"/></svg>
+                WhatsApp Us
               </a>
               <a href={`tel:${BRAND.phone}`} className="btn btn-outline" style={{ fontSize: 14 }}>
                 &#128222; Call Now
@@ -257,8 +301,12 @@ export default function EnquiryForm({ defaultRoom }) {
                 <div style={{
                   fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
                   color: i === step ? '#2563EB' : i < step ? '#A3E635' : 'rgba(255,255,255,0.5)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                 }}>
-                  {i < step ? '&#10003;' : s.num} &mdash; {s.label}
+                  {i < step
+                    ? <><Check size={12} strokeWidth={3} /> {s.label}</>
+                    : <>{s.num} &mdash; {s.label}</>
+                  }
                 </div>
               </div>
             ))}
@@ -292,10 +340,10 @@ export default function EnquiryForm({ defaultRoom }) {
                       onBlur={e => e.target.style.borderColor = err('phone') ? '#EF4444' : '#E5E7EB'} />
                   </Field>
                   <Field label="WhatsApp Number" error={err('whatsapp')}>
-                    <input style={inputStyle()} value={data.whatsapp} placeholder="If different"
+                    <input style={inputStyle(err('whatsapp'))} value={data.whatsapp} placeholder="If different"
                       onChange={e => set('whatsapp', e.target.value)} type="tel" maxLength={10}
                       onFocus={e => e.target.style.borderColor = '#2563EB'}
-                      onBlur={e => e.target.style.borderColor = '#E5E7EB'} />
+                      onBlur={e => e.target.style.borderColor = err('whatsapp') ? '#EF4444' : '#E5E7EB'} />
                   </Field>
                 </div>
                 <Field label="Email Address" error={err('email')}>
@@ -362,11 +410,11 @@ export default function EnquiryForm({ defaultRoom }) {
                     </select>
                   </Field>
                 </div>
-                <Field label="Current Location">
-                  <input style={inputStyle()} value={data.currentLocation} placeholder="City / Area you're currently in"
+                <Field label="Current Location" error={err('currentLocation')}>
+                  <input style={inputStyle(err('currentLocation'))} value={data.currentLocation} placeholder="City / Area you're currently in"
                     onChange={e => set('currentLocation', e.target.value)}
                     onFocus={e => e.target.style.borderColor = '#2563EB'}
-                    onBlur={e => e.target.style.borderColor = '#E5E7EB'} />
+                    onBlur={e => e.target.style.borderColor = err('currentLocation') ? '#EF4444' : '#E5E7EB'} />
                 </Field>
               </>}
 
@@ -380,8 +428,8 @@ export default function EnquiryForm({ defaultRoom }) {
                       onFocus={e => e.target.style.borderColor = '#2563EB'}
                       onBlur={e => e.target.style.borderColor = err('moveInDate') ? '#EF4444' : '#E5E7EB'} />
                   </Field>
-                  <Field label="Expected Stay Duration">
-                    <select style={selectStyle()} value={data.stayDuration} onChange={e => set('stayDuration', e.target.value)}>
+                  <Field label="Expected Stay Duration" required error={err('stayDuration')}>
+                    <select style={selectStyle(err('stayDuration'))} value={data.stayDuration} onChange={e => set('stayDuration', e.target.value)}>
                       <option value="">Select</option>
                       <option value="3 months">3 months</option>
                       <option value="6 months">6 months</option>
@@ -390,11 +438,11 @@ export default function EnquiryForm({ defaultRoom }) {
                     </select>
                   </Field>
                 </div>
-                <Field label="College / Company Name">
-                  <input style={inputStyle()} value={data.collegeOrCompany} placeholder="Where do you study/work?"
+                <Field label="College / Company Name" error={err('collegeOrCompany')}>
+                  <input style={inputStyle(err('collegeOrCompany'))} value={data.collegeOrCompany} placeholder="Where do you study/work?"
                     onChange={e => set('collegeOrCompany', e.target.value)}
                     onFocus={e => e.target.style.borderColor = '#2563EB'}
-                    onBlur={e => e.target.style.borderColor = '#E5E7EB'} />
+                    onBlur={e => e.target.style.borderColor = err('collegeOrCompany') ? '#EF4444' : '#E5E7EB'} />
                 </Field>
                 <Field label="How did you hear about us?">
                   <select style={selectStyle()} value={data.source} onChange={e => set('source', e.target.value)}>
