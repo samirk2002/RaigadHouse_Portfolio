@@ -92,10 +92,11 @@ export const FAQS = [
 ];
 
 export const REVIEWS = [
-  { name: 'Bhagayshri Wankhede', role: 'Engineering Student', rating: 5, text: 'Raigad House completely changed how I think about PG living. The gym, the community events, the fast Wi-Fi — it\'s everything I needed.', avatar: 'BW' },
-  { name: 'Akash Fuke', role: 'Consultant', rating: 5, text: 'As someone who relocated from Amravati, finding Raigad House was a game-changer. Feels like home but better.', avatar: 'AF' },
+  { name: 'Akash Fuke', role: 'Resident', rating: 5, text: 'Excellent PG with clean rooms, good food, and a peaceful environment. The owner and staff are very supportive and responsive. Maintenance is timely, and the location is convenient. Overall, a great place to stay. Highly recommended!!!', avatar: 'AF' },
+  { name: 'Aarti Thorbole', role: 'Resident · 1.5 years', rating: 5, text: 'I have been living at Raigad House PG for the past one and a half years, and my overall experience has been very positive. The food quality is good, hygienic, and the meals are well-prepared. The environment is comfortable and feels like a home away from home. The staff and management are supportive and cooperative, which makes the stay even more convenient. Highly recommended for students and working professionals!', avatar: 'AT' },
+  { name: 'Bhumika Muluk', role: 'Resident', rating: 5, text: 'Staying at this PG has been a wonderful experience. The rooms are always clean, spacious, and well-maintained, creating a comfortable living environment. The food is fresh, hygienic, and consistently good. The management is very cooperative, approachable, and quick to resolve any concerns. The staff is polite and helpful, and the overall atmosphere is safe, peaceful, and homely. I highly recommend this PG to anyone looking for a reliable and comfortable place to stay. One of the Best PG in Marunji! ☺', avatar: 'BM' },
+  { name: 'Bhagayshri Wankhede', role: 'Engineering Student', rating: 5, text: 'Raigad House completely changed how I think about PG living. The community events, the fast Wi-Fi — it\'s everything I needed.', avatar: 'BW' },
   { name: 'Sneha Kulkarni', role: 'MBA Student', rating: 5, text: 'The study zones and community vibe are incredible. Made so many friends here. Highly recommend!', avatar: 'SK' },
-  { name: 'Rahul Verma', role: 'Product Manager', rating: 5, text: 'Clean, safe, modern. The team is super responsive. Best PG experience I\'ve had in 3 cities.', avatar: 'RV' },
 ];
 
 export const NEARBY = [

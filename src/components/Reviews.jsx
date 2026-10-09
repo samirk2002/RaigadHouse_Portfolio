@@ -170,11 +170,8 @@ export default function Reviews() {
           textAlign: 'center', background: '#F5F7FA', borderRadius: 20,
           padding: '40px 24px', border: '1px solid #E5E7EB',
         }}>
-          <p style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 8 }}>
-            &#9888;&#65039; Sample reviews shown — replace with actual resident testimonials
-          </p>
           <p style={{ fontSize: 16, color: '#374151', fontWeight: 500, marginBottom: 24 }}>
-            Want to share your experience at Raigad House?
+            Loved your stay? Share your experience at Raigad House!
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="https://maps.app.goo.gl/hPBXEzpQ7JFG3DME6" target="_blank" rel="noopener noreferrer"

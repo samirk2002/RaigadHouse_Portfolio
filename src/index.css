@@ -98,7 +98,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 }
 @keyframes marquee {
   from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  to { transform: translateX(-33.333%); }
 }
 
 /* Prevent invisible text during font load */
