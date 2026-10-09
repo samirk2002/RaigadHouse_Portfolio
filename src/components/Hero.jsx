@@ -16,15 +16,18 @@ export default function Hero() {
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
-    const items = el.querySelectorAll('[data-animate]');
-    items.forEach((item, i) => {
-      item.style.opacity = '0';
-      item.style.transform = 'translateY(32px)';
-      setTimeout(() => {
-        item.style.transition = 'all 0.7s ease';
-        item.style.opacity = '1';
-        item.style.transform = 'translateY(0)';
-      }, 100 + i * 120);
+    // Use requestAnimationFrame to avoid layout shifts on first paint
+    requestAnimationFrame(() => {
+      const items = el.querySelectorAll('[data-animate]');
+      items.forEach((item, i) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(24px)';
+        setTimeout(() => {
+          item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+        }, 80 + i * 100);
+      });
     });
   }, []);
 
@@ -138,6 +141,9 @@ export default function Hero() {
               alt="Modern Raigad House room — bright, furnished, comfortable"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               loading="eager"
+              fetchPriority="high"
+              width={560}
+              height={700}
             />
           </div>
 

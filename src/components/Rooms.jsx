@@ -28,6 +28,8 @@ function RoomCard({ room, onSelect }) {
           onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
           onMouseLeave={e => e.target.style.transform = 'scale(1)'}
           loading="lazy"
+          width={400}
+          height={200}
         />
         <div style={{
           position: 'absolute', bottom: 12, left: 12,
