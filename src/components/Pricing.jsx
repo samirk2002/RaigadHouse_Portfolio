@@ -13,7 +13,8 @@ export default function Pricing() {
           <p className="section-sub" style={{ margin: '0 auto' }}>No hidden charges. What you see is what you pay.</p>
         </div>
 
-        <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 24px rgba(16,24,40,0.08)' }}>
+        {/* Desktop table */}
+        <div className="pricing-desktop" style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 24px rgba(16,24,40,0.08)' }}>
           {/* Header */}
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: '#101828' }}>
             <div style={{ padding: '20px 24px', color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600 }}>Feature</div>
@@ -65,10 +66,61 @@ export default function Pricing() {
             ))}
           </div>
         </div>
+
+        {/* Mobile cards */}
+        <div className="pricing-mobile" style={{ display: 'none', flexDirection: 'column', gap: 20 }}>
+          {PLANS.map((plan, pi) => (
+            <div key={plan} style={{
+              background: '#fff', borderRadius: 20, overflow: 'hidden',
+              boxShadow: '0 4px 24px rgba(16,24,40,0.08)',
+              border: `2px solid ${PLAN_COLORS[pi]}`,
+            }}>
+              {/* Card header */}
+              <div style={{ background: PLAN_COLORS[pi], padding: '16px 20px' }}>
+                <div style={{ color: '#fff', fontSize: 18, fontWeight: 700 }}>{plan} Room</div>
+                <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13, marginTop: 2 }}>
+                  {pi === 0 ? 'Private room for one' : pi === 1 ? 'Shared between two' : 'Shared between three'}
+                </div>
+              </div>
+
+              {/* Feature rows */}
+              {PRICING_COMPARE.map((row, i) => (
+                <div key={i} style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '13px 20px',
+                  background: i % 2 === 0 ? '#fff' : '#F9FAFB',
+                  borderBottom: '1px solid #F3F4F6',
+                }}>
+                  <span style={{ fontSize: 14, color: '#6B7280', fontWeight: 500 }}>{row.feature}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#101828' }}>
+                    {pi === 0 ? row.single : pi === 1 ? row.double : row.triple}
+                  </span>
+                </div>
+              ))}
+
+              {/* CTA */}
+              <div style={{ padding: '16px 20px', background: '#F9FAFB' }}>
+                <button
+                  className="btn"
+                  onClick={() => document.querySelector('#enquiry')?.scrollIntoView({ behavior: 'smooth' })}
+                  style={{
+                    background: PLAN_COLORS[pi], color: '#fff',
+                    width: '100%', justifyContent: 'center',
+                    padding: '13px', fontSize: 15, borderRadius: 12,
+                  }}
+                >
+                  Book {plan} Room
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
+
       <style>{`
         @media (max-width: 640px) {
-          #pricing-table { overflow-x: auto; }
+          .pricing-desktop { display: none !important; }
+          .pricing-mobile { display: flex !important; }
         }
       `}</style>
     </section>

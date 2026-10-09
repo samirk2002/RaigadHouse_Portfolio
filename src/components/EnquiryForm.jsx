@@ -21,6 +21,26 @@ const EMAILJS_PUBLIC_KEY  = '01Fy6ZoH4nmJxZLb0';
 // {{move_in}}    {{stay}}        {{location}} {{source}}  {{message}}
 // {{enquiry_date}}  {{to_email}}
 
+// Sanitize input — strip HTML tags and trim
+const sanitize = (val) => String(val).replace(/<[^>]*>/g, '').trim();
+
+// Rate limit — max 3 submissions per 10 minutes per session
+const RATE_KEY = 'rh_submissions';
+const isRateLimited = () => {
+  try {
+    const data = JSON.parse(sessionStorage.getItem(RATE_KEY) || '{"count":0,"ts":0}');
+    if (Date.now() - data.ts > 10 * 60 * 1000) return false;
+    return data.count >= 3;
+  } catch { return false; }
+};
+const recordSubmission = () => {
+  try {
+    const data = JSON.parse(sessionStorage.getItem(RATE_KEY) || '{"count":0,"ts":0}');
+    const ts = Date.now() - data.ts > 10 * 60 * 1000 ? Date.now() : data.ts;
+    sessionStorage.setItem(RATE_KEY, JSON.stringify({ count: (Date.now() - data.ts > 10 * 60 * 1000 ? 1 : data.count + 1), ts }));
+  } catch {}
+};
+
 const INITIAL = {
   name: '', phone: '', whatsapp: '', email: '',
   gender: '', age: '', occupationType: '',
@@ -28,6 +48,7 @@ const INITIAL = {
   acRequired: '', foodRequired: '', moveInDate: '',
   stayDuration: '', currentLocation: '', source: '', message: '',
   consent: false,
+  honeypot: '', // spam trap — must stay empty
 };
 
 const STEPS = [
@@ -70,9 +91,21 @@ export default function EnquiryForm({ defaultRoom }) {
   const validate = () => {
     const e = {};
     if (step === 0) {
-      if (!data.name.trim()) e.name = 'Name is required';
-      if (!/^[6-9]\d{9}$/.test(data.phone)) e.phone = 'Enter valid 10-digit mobile number';
-      if (data.email && !/\S+@\S+\.\S+/.test(data.email)) e.email = 'Enter valid email';
+      const name = sanitize(data.name);
+      if (!name) e.name = 'Name is required';
+      else if (name.length < 2) e.name = 'Name must be at least 2 characters';
+      else if (name.length > 60) e.name = 'Name is too long';
+      else if (!/^[a-zA-Z\s'.'-]+$/.test(name)) e.name = 'Name can only contain letters';
+
+      if (!/^[6-9]\d{9}$/.test(data.phone)) e.phone = 'Enter valid 10-digit Indian mobile number';
+
+      if (data.whatsapp && !/^[6-9]\d{9}$/.test(data.whatsapp)) e.whatsapp = 'Enter valid 10-digit number';
+
+      if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email)) e.email = 'Enter a valid email address';
+
+      if (data.age && (isNaN(data.age) || Number(data.age) < 16 || Number(data.age) > 45))
+        e.age = 'Age must be between 16 and 45';
+
       if (!data.occupationType) e.occupationType = 'Please select one';
     }
     if (step === 1) {
@@ -81,6 +114,14 @@ export default function EnquiryForm({ defaultRoom }) {
     }
     if (step === 2) {
       if (!data.moveInDate) e.moveInDate = 'Please select move-in date';
+      else {
+        const selected = new Date(data.moveInDate);
+        const today = new Date(); today.setHours(0,0,0,0);
+        const maxDate = new Date(); maxDate.setFullYear(maxDate.getFullYear() + 1);
+        if (selected < today) e.moveInDate = 'Move-in date cannot be in the past';
+        else if (selected > maxDate) e.moveInDate = 'Move-in date cannot be more than 1 year ahead';
+      }
+      if (data.message && data.message.length > 500) e.message = 'Message cannot exceed 500 characters';
       if (!data.consent) e.consent = 'Please accept to continue';
     }
     setErrors(e);
@@ -92,6 +133,13 @@ export default function EnquiryForm({ defaultRoom }) {
 
   const submit = async () => {
     if (!validate()) return;
+    // Honeypot check — bots fill hidden fields
+    if (data.honeypot) return;
+    // Rate limit check
+    if (isRateLimited()) {
+      setSendError('Too many submissions. Please wait 10 minutes before trying again.');
+      return;
+    }
     setSending(true);
     setSendError('');
 
@@ -119,17 +167,10 @@ export default function EnquiryForm({ defaultRoom }) {
 
     try {
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY);
+      recordSubmission();
       setSubmitted(true);
     } catch (error) {
-      console.error('EmailJS error:', error);
-      // Still show success to user — log the data so you don't lose it
-      console.log('Enquiry data (email failed):', templateParams);
-      // If EmailJS not configured yet, still submit successfully
-      if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
-        setSubmitted(true); // Allow testing before EmailJS is configured
-      } else {
-        setSendError('Could not send email. Please call us directly or try again.');
-      }
+      setSendError('Could not send enquiry. Please call us directly or try again.');
     } finally {
       setSending(false);
     }
@@ -365,13 +406,23 @@ export default function EnquiryForm({ defaultRoom }) {
                     <option value="Other">Other</option>
                   </select>
                 </Field>
-                <Field label="Message (Optional)">
-                  <textarea style={{ ...inputStyle(), resize: 'vertical', minHeight: 80 }}
-                    value={data.message} placeholder="Any specific requirements or questions?"
+                <Field label="Message (Optional)" error={err('message')}>
+                  <textarea style={{ ...inputStyle(err('message')), resize: 'vertical', minHeight: 80 }}
+                    value={data.message} placeholder="Any specific requirements or questions? (max 500 chars)"
                     onChange={e => set('message', e.target.value)}
                     onFocus={e => e.target.style.borderColor = '#2563EB'}
-                    onBlur={e => e.target.style.borderColor = '#E5E7EB'} />
+                    onBlur={e => e.target.style.borderColor = err('message') ? '#EF4444' : '#E5E7EB'}
+                    maxLength={500} />
+                  <span style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'right' }}>{data.message.length}/500</span>
                 </Field>
+                {/* Honeypot — hidden from real users, bots will fill this */}
+                <input
+                  type="text" value={data.honeypot}
+                  onChange={e => set('honeypot', e.target.value)}
+                  style={{ display: 'none' }}
+                  tabIndex={-1} autoComplete="off"
+                  aria-hidden="true"
+                />
                 <Field error={err('consent')}>
                   <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', fontSize: 13, color: '#374151' }}>
                     <input type="checkbox" checked={data.consent} onChange={e => set('consent', e.target.checked)}

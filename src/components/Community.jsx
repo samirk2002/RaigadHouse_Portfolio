@@ -8,9 +8,9 @@ const COMMUNITY_IMAGES = [
 
 export default function Community() {
   return (
-    <section style={{ padding: '96px 0', background: '#101828', overflow: 'hidden' }}>
+    <section id="community" style={{ padding: '96px 0', background: '#101828', overflow: 'hidden' }}>
       <div className="container">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
+        <div className="community-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
           {/* Left */}
           <div>
             <span style={{
@@ -46,9 +46,9 @@ export default function Community() {
           </div>
 
           {/* Right — photo grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div className="community-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {COMMUNITY_IMAGES.map((img, i) => (
-              <div key={i} style={{
+              <div key={i} className={i === 0 ? 'community-img-wide' : ''} style={{
                 borderRadius: 16, overflow: 'hidden',
                 gridColumn: i === 0 ? 'span 2' : 'span 1',
                 height: i === 0 ? 220 : 160,
@@ -66,7 +66,31 @@ export default function Community() {
       </div>
       <style>{`
         @media (max-width: 768px) {
-          #community-grid { grid-template-columns: 1fr !important; }
+          .community-layout {
+            grid-template-columns: 1fr !important;
+            gap: 40px !important;
+          }
+          .community-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .community-grid > div {
+            grid-column: span 1 !important;
+            height: 140px !important;
+          }
+          .community-grid > div.community-img-wide {
+            grid-column: span 2 !important;
+            height: 200px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .community-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .community-grid > div,
+          .community-grid > div.community-img-wide {
+            grid-column: span 1 !important;
+            height: 200px !important;
+          }
         }
       `}</style>
     </section>
