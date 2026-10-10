@@ -8,7 +8,7 @@ const COMMUNITY_IMAGES = [
 
 export default function Community() {
   return (
-    <section id="community" style={{ padding: '96px 0', background: '#101828', overflow: 'hidden' }}>
+    <section id="community" style={{ padding: '72px 0', background: '#101828', overflow: 'hidden' }}>
       <div className="container">
         <div className="community-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
           {/* Left */}
@@ -58,6 +58,7 @@ export default function Community() {
                   onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
                   onMouseLeave={e => e.target.style.transform = 'scale(1)'}
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
             ))}

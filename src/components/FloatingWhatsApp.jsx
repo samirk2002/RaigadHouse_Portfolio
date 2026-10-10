@@ -27,7 +27,7 @@ export default function FloatingWhatsApp() {
       className="desktop-whatsapp"
     >
       <span style={{ fontSize: 20, display: 'flex' }}><WhatsAppIcon size={22} /></span>
-      WhatsApp Us
+      Chat With Us
       <style>{`
         @media (max-width: 900px) { .desktop-whatsapp { display: none !important; } }
       `}</style>

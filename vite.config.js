@@ -5,6 +5,9 @@ export default defineConfig({
   plugins: [react()],
   build: {
     minify: 'oxc',
+    sourcemap: false,
+    cssMinify: true,
+    assetsInlineLimit: 4096, // inline assets < 4kb as base64
     chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
@@ -19,7 +22,15 @@ export default defineConfig({
             return 'icons';
           }
         },
+        // Cache-busting: content hash in filenames
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]',
       },
     },
+  },
+  // Optimize deps pre-bundling
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'lucide-react'],
   },
 })
