@@ -31,6 +31,7 @@ h1, h2, h3, h4, h5 {
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 img { max-width: 100%; display: block; }
@@ -39,8 +40,8 @@ button { cursor: pointer; border: none; font-family: inherit; }
 
 /* Utility */
 .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-.section { padding: 96px 0; }
-.section-sm { padding: 64px 0; }
+.section { padding: 72px 0; }
+.section-sm { padding: 48px 0; }
 .grey-bg { background: var(--grey); }
 
 /* Buttons */
@@ -86,7 +87,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 
 /* Animations */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(32px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeIn {
@@ -94,7 +95,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
 }
 @keyframes marquee {
   from { transform: translateX(0); }
@@ -185,6 +186,25 @@ button { cursor: pointer; border: none; font-family: inherit; }
 /* Focus */
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 
+/* Touch targets — min 44px for accessibility */
+button, a, [role="button"] { min-height: 44px; }
+.btn { min-height: 44px; }
+
+
+
+/* Tap highlight removal on mobile */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Smooth image rendering */
+img { image-rendering: auto; }
+
+/* Print styles */
+@media print {
+  nav, .mobile-sticky-bar, footer { display: none !important; }
+  body { font-size: 12pt; color: #000; }
+  a::after { content: ' (' attr(href) ')'; font-size: 10pt; color: #555; }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -195,7 +215,12 @@ button { cursor: pointer; border: none; font-family: inherit; }
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
-  .section { padding: 64px 0; }
+  .section { padding: 56px 0; }
+  .section-sm { padding: 36px 0; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-  .section-sub { font-size: 16px; }
+  .section-sub { font-size: 15px; }
+  .section-title { font-size: clamp(26px, 7vw, 40px); }
+  .container { padding: 0 16px; }
+  /* Prevent horizontal overflow on small screens */
+  section { overflow-x: hidden; }
 }

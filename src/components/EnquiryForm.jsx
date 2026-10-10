@@ -222,7 +222,7 @@ export default function EnquiryForm({ defaultRoom }) {
   // ── SUCCESS SCREEN ──────────────────────────────────────────
   if (submitted) {
     return (
-      <section id="enquiry" className="section diagonal-bg">
+      <section id="enquiry" className="section enquiry-bg" style={{ padding: '72px 0' }}>
         <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <div style={{
             background: '#fff', borderRadius: 24, padding: '56px 40px',
@@ -279,28 +279,29 @@ export default function EnquiryForm({ defaultRoom }) {
 
   // ── FORM ────────────────────────────────────────────────────
   return (
-    <section id="enquiry" className="section diagonal-bg">
+    <section id="enquiry" className="section enquiry-bg" style={{ padding: '72px 0' }}>
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 700, color: '#fff', marginBottom: 12 }}>
+          <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 700, color: '#101828', marginBottom: 12 }}>
             READY TO <span style={{ color: '#FF6B00' }}>MOVE IN?</span>
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 17 }}>
+          <p style={{ color: '#6B7280', fontSize: 17 }}>
             Tell us a little about yourself and we'll help you find your space.
           </p>
         </div>
 
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
           {/* Progress */}
-          <div style={{ display: 'flex', marginBottom: 32, background: 'rgba(255,255,255,0.1)', borderRadius: 50, padding: 4 }}>
+          <div style={{ display: 'flex', marginBottom: 32, background: 'rgba(16,24,40,0.07)', borderRadius: 50, padding: 4 }}>
             {STEPS.map((s, i) => (
               <div key={i} style={{
                 flex: 1, textAlign: 'center', padding: '10px 8px', borderRadius: 50,
                 background: i === step ? '#fff' : 'transparent', transition: 'all 0.3s ease',
+                boxShadow: i === step ? '0 2px 8px rgba(16,24,40,0.1)' : 'none',
               }}>
                 <div style={{
                   fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
-                  color: i === step ? '#2563EB' : i < step ? '#A3E635' : 'rgba(255,255,255,0.5)',
+                  color: i === step ? '#2563EB' : i < step ? '#059669' : '#9CA3AF',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                 }}>
                   {i < step
@@ -512,7 +513,32 @@ export default function EnquiryForm({ defaultRoom }) {
           </div>
         </div>
       </div>
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .enquiry-bg {
+          position: relative;
+          background: #FFF8F3;
+          overflow: hidden;
+        }
+        .enquiry-bg::before {
+          content: '';
+          position: absolute;
+          top: -120px; right: -80px;
+          width: 420px; height: 420px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255,107,0,0.1) 0%, transparent 70%);
+          pointer-events: none;
+        }
+        .enquiry-bg::after {
+          content: '';
+          position: absolute;
+          bottom: -80px; left: -60px;
+          width: 320px; height: 320px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%);
+          pointer-events: none;
+        }
+      `}</style>
     </section>
   );
 }

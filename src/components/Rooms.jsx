@@ -28,6 +28,7 @@ function RoomCard({ room, onSelect }) {
           onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
           onMouseLeave={e => e.target.style.transform = 'scale(1)'}
           loading="lazy"
+          decoding="async"
           width={400}
           height={200}
         />
@@ -95,9 +96,9 @@ export default function Rooms({ onRoomSelect }) {
     <section id="rooms" className="section">
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <span className="section-label orange">Room Plans</span>
+          <span className="section-label orange">Our Rooms </span>
           <h2 className="section-title">PICK YOUR <span className="accent-orange">GAME PLAN.</span></h2>
-          <p className="section-sub" style={{ margin: '0 auto' }}>Choose the room that fits your lifestyle.</p>
+          <p className="section-sub" style={{ margin: '0 auto' }}>Book Your Room &amp; Enjoy the Comfort.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 28 }}>
           {ROOMS.map(room => <RoomCard key={room.id} room={room} onSelect={onRoomSelect} />)}

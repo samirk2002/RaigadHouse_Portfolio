@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './index.css';
 
+import NotFound from './components/NotFound';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Marquee from './components/Marquee';
@@ -19,7 +20,11 @@ import EnquiryForm from './components/EnquiryForm';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 
+const isKnownPath = ['/', ''].includes(window.location.pathname);
+
 export default function App() {
+  if (!isKnownPath) return <NotFound />;
+
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [enquiryRoom, setEnquiryRoom] = useState('');
 
