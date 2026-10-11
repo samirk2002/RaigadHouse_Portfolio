@@ -90,35 +90,36 @@ export default function Reviews() {
             </p>
           </div>
 
-          {/* Rating hero — enlarged */}
+          {/* Rating hero */}
           <div style={{
             background: '#fff', borderRadius: 20,
-            padding: '28px 36px',
+            padding: '20px 24px',
             border: '1.5px solid #E5E7EB',
             boxShadow: '0 8px 32px rgba(16,24,40,0.08)',
-            display: 'flex', alignItems: 'center', gap: 28, flexShrink: 0,
-          }}>
+            display: 'flex', alignItems: 'center', gap: 20, flexShrink: 0,
+            width: '100%', maxWidth: 420,
+          }} className="rating-hero">
             {/* Score block */}
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: 'Space Grotesk', fontSize: 64, fontWeight: 800, color: '#101828', lineHeight: 1, letterSpacing: '-0.03em' }}>4.9</div>
-              <div style={{ marginTop: 6, marginBottom: 6 }}><Stars count={5} size={18} /></div>
-              <div style={{ fontSize: 12, color: '#9CA3AF', fontWeight: 500 }}>120+ Google reviews</div>
+            <div style={{ textAlign: 'center', flexShrink: 0 }}>
+              <div style={{ fontFamily: 'Space Grotesk', fontSize: 56, fontWeight: 800, color: '#101828', lineHeight: 1, letterSpacing: '-0.03em' }}>4.9</div>
+              <div style={{ marginTop: 6, marginBottom: 6 }}><Stars count={5} size={16} /></div>
+              <div style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 500 }}>120+ Google reviews</div>
             </div>
 
-            <div style={{ width: 1, height: 72, background: '#E5E7EB', flexShrink: 0 }} />
+            <div style={{ width: 1, height: 64, background: '#E5E7EB', flexShrink: 0 }} />
 
             {/* Actions */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 12, padding: '10px 18px' }}>
-                <GoogleIcon size={22} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 10, padding: '8px 12px' }}>
+                <GoogleIcon size={20} />
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: '#101828' }}>Google Maps</div>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: '#101828' }}>Google Maps</div>
                   <div style={{ fontSize: 11, color: '#9CA3AF' }}>Verified reviews</div>
                 </div>
               </div>
               <a href="https://maps.app.goo.gl/hPBXEzpQ7JFG3DME6" target="_blank" rel="noopener noreferrer"
-                className="btn btn-primary" style={{ fontSize: 14, padding: '11px 20px', gap: 8, justifyContent: 'center' }}>
-                <GoogleIcon size={15} /> Write a Review
+                className="btn btn-primary" style={{ fontSize: 13, padding: '10px 16px', gap: 6, justifyContent: 'center' }}>
+                <GoogleIcon size={14} /> Write a Review
               </a>
             </div>
           </div>
@@ -135,8 +136,9 @@ export default function Reviews() {
 
       {/* Trust strip */}
       <div className="container" style={{ marginTop: 36 }}>
-        <div style={{
-          display: 'flex', gap: 0, justifyContent: 'center', flexWrap: 'wrap',
+        <div className="trust-strip" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
           background: '#fff', borderRadius: 14, border: '1px solid #E5E7EB', overflow: 'hidden',
         }}>
           {[
@@ -144,12 +146,13 @@ export default function Reviews() {
             { icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, text: '200+ Residents' },
             { icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>, text: '98% Recommend' },
             { icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>, text: '3+ Years of Trust' },
-          ].map((b, i, arr) => (
+          ].map((b, i) => (
             <div key={b.text} style={{
-              flex: 1, minWidth: 130, padding: '14px 16px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              borderRight: i < arr.length - 1 ? '1px solid #E5E7EB' : 'none',
+              padding: '14px 12px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
               fontSize: 13, fontWeight: 600, color: '#374151',
+              borderRight: i % 2 === 0 ? '1px solid #E5E7EB' : 'none',
+              borderBottom: '1px solid #E5E7EB',
             }}>
               {b.icon} {b.text}
             </div>
@@ -169,8 +172,21 @@ export default function Reviews() {
         .rev-left  { animation: rev-scroll-left  32s linear infinite; }
         .rev-right { animation: rev-scroll-right 28s linear infinite; }
         .rev-left:hover, .rev-right:hover { animation-play-state: paused; }
+
+        /* Mobile: stack header vertically, rating hero full width */
         @media (max-width: 640px) {
-          #reviews .container > div:first-child { flex-direction: column !important; align-items: flex-start !important; }
+          #reviews .container > div:first-child {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .rating-hero {
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+          /* Trust strip: 2x2 grid on mobile */
+          .trust-strip {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
         }
       `}</style>
     </section>
